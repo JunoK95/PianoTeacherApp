@@ -1,0 +1,58 @@
+import requests
+import time
+from bs4 import BeautifulSoup
+
+core_Url = "https://www.halleonard.com"
+pageNumber = 1
+maxPage = 2
+musicCount = 1
+
+#gets the html for page
+##Not needed anymore.  Calls it in while loop
+#r = requests.get(url)
+#soup =  BeautifulSoup(r.content, "html.parser")
+
+#grabs each sheet music
+containers = soup.find_all("a", {"class":"tip"})
+
+while (pageNumber <= maxPage):
+	if (pageNumber == 1):
+		pageUrl = "&page=" + str(pageNumber)
+		newUrl = "https://www.halleonard.com/search/search.action?seriesfeature=&menuid=7023&subsiteid=3&searchtype=product" + pageUrl
+		newRequest = requests.get(newUrl)
+		time.sleep(10)
+		newSoup = BeautifulSoup(newRequest.content, "html.parser")
+		newContainers = newSoup.find_all("a", {"class":"tip"})
+		for item in newContainers:
+			if item.has_attr("href"):
+				sheetMusicPage = requests.get(core_Url + item.attrs['href'])
+				sheetMusicSoup = BeautifulSoup(sheetMusicPage.content, "html.parser")
+				sheetMusicTitle = sheetMusicSoup.find_all("td", {"class":"pageHeader"})[0].text
+				print((str(musicCount) + sheetMusicTitle.strip()).encode('charmap', 'ignore'))
+				musicCount += 1
+		pageNumber += 1
+		
+	else:
+		pageUrl = "&page=" + str(pageNumber)
+		newUrl = "https://www.halleonard.com/search/search.action?seriesfeature=&menuid=7023&subsiteid=3&searchtype=product" + pageUrl
+		newRequest = requests.get(newUrl)
+		time.sleep(10)
+		newSoup = BeautifulSoup(newRequest.content, "html.parser")
+		newContainers = newSoup.find_all("a", {"class":"tip"})
+		for item in newContainers:
+			if item.has_attr("href"):
+				sheetMusicPage = requests.get(core_Url + item.attrs['href'])
+				sheetMusicSoup = BeautifulSoup(sheetMusicPage.content, "html.parser")
+				sheetMusicTitle = sheetMusicSoup.find_all("td", {"class":"pageHeader"})[0].text
+				print((str(musicCount) + sheetMusicTitle.strip()).encode('charmap', 'ignore'))
+				musicCount += 1
+		pageNumber += 1
+
+
+
+
+
+	#newString = link.text.replace('\t','').replace('\n','').replace('\r','').replace('b','').replace("'",'')
+	#newerString = str(newString.encode("utf-8"))
+	#if newerString.find("b'\xe2\x80\xa2") == -1:
+	#	print (newString.encode("utf-8"))
